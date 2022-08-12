@@ -1,0 +1,22 @@
+*,
+::after,
+::before {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 100%;
+}
+
+:root {
+--backgroundColor:#fafcfa;
+--bodyFont: 'Cabin', Sans-Serif;
+}
+
+body {
+    background: var(--backgroundColor) ;
+    font-family: var(--bodyFont);
+    font-weight: 400;
+    line-height: 1.75;
+
+}
