@@ -9,7 +9,7 @@ html {
 }
 
 :root {
---backgroundColor:#fafcfa;
+--backgroundColor:#f1f5eb;
 --bodyFont: 'Cabin', Sans-Serif;
 }
 
@@ -20,3 +20,4 @@ body {
     line-height: 1.75;
 
 }
+
