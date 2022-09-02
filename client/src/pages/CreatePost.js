@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPosts, createPost, handleInputs } from '../features/createPostSlice';
+import { getPosts, createPost, handleInputs, getFiles } from '../features/createPostSlice';
 import styled from 'styled-components';
+import FileBase from 'react-file-base64';
+import { useNavigate, useLocation, useHistory } from 'react-router-dom';
+import FormInput from '../components/FormInput';
+
 
 
 const CreatePost = () => {
-const { caption, topic, topicOptions } = useSelector((store) => store.createPost)
+const { caption, topic, topicOptions, selectedFile } = useSelector((store) => store.createPost)
 const dispatch = useDispatch();
+const location = useLocation()
 const handleChange = (e) =>{
  const name = e.target.name;
  const value = e.target.value;
@@ -15,22 +20,35 @@ const handleChange = (e) =>{
 
 const handleSubmit = (e) =>{
   e.preventDefault();
-  dispatch(getPosts())
-  dispatch(createPost({caption, topic}))
+  dispatch(createPost({caption, topic, selectedFile}));
+  
 };
+
+
+
   return (
     <Wrapper className='create-post'>
       <div className='container'>
         <form onSubmit={handleSubmit} className='form-container'>
           <div className='file-container'> 
-            <button  type='button' >Upload</button>
+            <h2>UPload Video</h2>
+            <h4>Select and upload video to your account</h4>
+            <div className='file'>
+              <p>Selected video should be less than 14MB</p>
+              <FileBase
+                type='file'
+                multiple={false}
+                onDone={({base64}) => dispatch(getFiles({base64}))}
+                
+            />
+            </div>
           </div>
           <div className='details-container'>
-            <label htmlFor='caption'>Caption</label>
-            <input className='input' type='text' name='caption' value={caption} id='caption' onChange={handleChange}/>
-
+            {/* <label htmlFor='caption'>Caption</label>
+            <input className='input' type='text' name='caption' value={caption} id='caption' onChange={handleChange}/> */}
+            <FormInput  type='text' name='caption' value={caption} id='caption' labelText='Caption' handleChange={handleChange} />
             <label className='topic-label' htmlFor='topic'>Topic</label>
-            <select className='input' name='topic' value={topic} id='topic' onChange={handleChange}>
+            <select className='form-input' name='topic' value={topic}  onChange={handleChange}>
               {topicOptions.map((itemValue, index) =>{
                 return(
                   <option key={index} value={itemValue}>{itemValue}</option>
@@ -39,7 +57,7 @@ const handleSubmit = (e) =>{
             </select>
             <div className='btn-container'>
               <button className='post-btn' type='submit' >Post</button>
-              <button className='discard-btn' type='button' onClick='' >Discard</button>
+              <button className='discard-btn' type='button'  >Discard</button>
             </div>
           </div>
         </form>
@@ -50,6 +68,7 @@ const handleSubmit = (e) =>{
 
 const Wrapper = styled.div`
 padding: 50px 0px 50px 0px;
+margin-top: 100px;
 
 .container{
   
@@ -70,11 +89,7 @@ padding: 50px 0px 50px 0px;
   flex-direction: column;
   padding: 100px 100px 50px 100px;
 }
-.input{
-  border: solid 2px #ebe6e6;
-  height: 40px;
-  border-radius: 5px;
-}
+
 .btn-container{
   padding-top: 30px;
 }
@@ -84,7 +99,7 @@ padding: 50px 0px 50px 0px;
   width: 150px;
   border-radius: 5px;
   background-color: #e63295;
-  border-color: #e63295;
+  border: none;
   margin-right: 30px;
   color: white;
   cursor: pointer;
@@ -102,8 +117,21 @@ padding: 50px 0px 50px 0px;
   padding-top: 30px;
 }
 .file-container{
+  padding-left: 25px;
+}
+.file-container h4{
+  color: #736f66;
+  margin-top: -20px;
+}
+.file p{
+  font-weight: 400;
+  margin-top: 100px;
+  color: #736f66;
+}
+.file{
   
 }
+
 
 `
 

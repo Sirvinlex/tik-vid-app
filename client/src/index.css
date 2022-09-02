@@ -21,3 +21,32 @@ body {
 
 }
 
+.home-height{
+    height: 100vh;
+}
+
+.form-input {
+    border: solid 2px #ebe6e6;
+    height: 40px;
+    border-radius: 5px;
+}
+
+/* .input {
+    background-color: var(--backgroundColor);
+    border: solid var(--backgroundColor);
+    width: 300px;
+    border-radius: 50px;
+    margin-bottom: 10px;
+} */
+
+.loading{
+    font-weight: 700;
+    font-size: 50px;
+    color: #e63295;
+    text-align: center;
+    font-style: italic;
+    height: 100vh;
+    background-color: white;
+    margin-left: -50px;
+}
+
