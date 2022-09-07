@@ -8,4 +8,6 @@ export const deletePost = (id) => API.delete(`posts/${id}`)
 export const registerUser = (regData) => API.post('/user/registerUser', regData)
 export const loginUser = (loginData) => API.post('/user/loginUser', loginData)
 export const postComment = (comments, id) => API.post(`/posts/${id}/postComment`, {comments})
+export const likePost = (postId, userId) => API.post(`/posts/${postId}/likePost`, {userId})
+export const deleteComment = (id, index) => API.patch(`/posts/${id}/deleteComment`, {index})
 

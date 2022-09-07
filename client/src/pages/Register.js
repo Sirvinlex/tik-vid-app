@@ -5,7 +5,7 @@ import FormInput from '../components/FormInput';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleInputs, logUser, regUser, registerForm, loginForm } from '../features/userSlice';
-
+import { toast } from 'react-toastify';
 
 
 
@@ -31,17 +31,20 @@ const Register = () => {
     e.preventDefault();
 
     if(login){
-       dispatch(logUser({email, password}))
-       navigate('/')
+      if(email && password){
+        dispatch(logUser({email, password}))
+        navigate('/')
+      }else{
+        toast.error('Please fill all fields')
+      }
+       
     }else{
-      dispatch(regUser({name, email, password}))
+      if(name && email && password){
+        dispatch(regUser({name, email, password}))
+      }else{
+        toast.error('Please fill all fields')
+      }
     }
-    // login ? (
-    //   dispatch(logUser({email, password}))
-    //   navigate('/')
-    // ) : (
-    //   dispatch(regUser({name, email, password}))
-    // )
     
   }
   return (
@@ -118,8 +121,6 @@ bottom: 0;
   border-radius: 10px;
 }
 .reg-main{
-  /* margin: 50px 0px 50px 100px; */
-  /* margin-top: 50px; */
   margin-left: 55px;
   margin-top: 50px;
   width: 80%;
@@ -130,7 +131,6 @@ bottom: 0;
 }
 .reg-container h3{
   height: 5px;
-  
 }
 hr{
   background-color: #e63295;
@@ -142,8 +142,6 @@ hr{
 .logo-text{
   font-size: 20px;
   font-weight: 600;
-  /* margin-top: -30px; */
-  /* margin: 15px 0px 0px -215px; */
   color: #e63295;
   padding-bottom: 20px;
 }
@@ -152,13 +150,10 @@ hr{
   font-weight: 300;
 }
 .logo{
-  /* margin: 0px 0px 20px 10px; */
   color: #e63295;
   margin-left: 150px;
-  /* margin-top: 100px; */
 }
 .logo-container{
-  /* margin: 20px 0 0 150px; */
 }
 .form{
   display: grid;
@@ -166,8 +161,6 @@ hr{
   grid-template-rows: auto auto auto auto;
   grid-row-gap: 15px;
 
-  /* flex-direction: column; */
-  
 }
 .form-container{
   padding: 0 15px 0 15px;

@@ -52,9 +52,20 @@ export const postComment = createAsyncThunk('post/postComment', async (commentDa
     }
 });
 
+export const deleteComment = createAsyncThunk('post/deleteComment', async (deleteCommentData, thunkAPI) =>{
+    try {
+        const { id, index } = deleteCommentData;
+        const {data} = await api.deleteComment(id, index);
+        thunkAPI.dispatch(getPosts())
+    } catch (error) {
+        
+    }
+});
+
 export const likePost = createAsyncThunk('post/likePost', async (likePostData, thunkAPI) =>{
     try {
-        console.log(likePostData)
+        const {postId, userId} = likePostData;
+        const {data} = await api.likePost(postId, userId);
     } catch (error) {
         
     }

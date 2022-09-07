@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 import * as api from '../api';
 import axios from 'axios';
 
@@ -7,8 +8,8 @@ const initialState = {
     email: '',
     password: '',
     login: true,
-    toggleUser: false,
     user: {},
+    toggleUser: false,
 };
 
 // export const addUserToLocalStorage = (user) => {
@@ -58,8 +59,13 @@ const userSlice = createSlice({
             state.login = true;
         },
         logoutAccount:(state) =>{
-            state.toggleUser= false;
+            const getUser = localStorage.getItem('user');
+            const localStorageUser = getUser ? JSON.parse(getUser) : null;
+            toast.success(`Goodbye ${localStorageUser?.name}`)
             localStorage.removeItem('user');
+            state.toggleUser= false;
+            state.creator= '';
+             
         },
     },
     extraReducers:{
@@ -69,6 +75,7 @@ const userSlice = createSlice({
         [regUser.fulfilled]: (state, actions) => {
             state.login = true;
             state.password = ''
+            toast.success('Registration successful! Proceed to Login')
         },
         [regUser.rejected]: (state, actions) => {
             
@@ -80,6 +87,7 @@ const userSlice = createSlice({
             state.user= payload;
             localStorage.setItem('user', JSON.stringify(state.user));
             state.toggleUser= true;
+            toast.success(`Welcome back ${state?.user?.name}`)
         },
         [logUser.rejected]: (state, actions) => {
             

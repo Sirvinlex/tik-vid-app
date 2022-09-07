@@ -1,17 +1,23 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { getPosts, createPost, handleInputs, getFiles } from '../features/createPostSlice';
 import styled from 'styled-components';
 import FileBase from 'react-file-base64';
-import { useNavigate, useLocation, useHistory } from 'react-router-dom';
 import FormInput from '../components/FormInput';
+import { toast } from 'react-toastify';
+
 
 
 
 const CreatePost = () => {
-const { caption, topic, topicOptions, selectedFile } = useSelector((store) => store.createPost)
+const getUser = localStorage.getItem('user');
+const localStorageUser = getUser ? JSON.parse(getUser) : null;
+const creator = localStorageUser?._id;
+const creatorName = localStorageUser?.name;
+const { caption, topic, topicOptions, selectedFile, } = useSelector((store) => store.createPost)
 const dispatch = useDispatch();
-const location = useLocation()
+const navigate= useNavigate();
 const handleChange = (e) =>{
  const name = e.target.name;
  const value = e.target.value;
@@ -20,7 +26,12 @@ const handleChange = (e) =>{
 
 const handleSubmit = (e) =>{
   e.preventDefault();
-  dispatch(createPost({caption, topic, selectedFile}));
+  if(caption && topic && selectedFile){
+    dispatch(createPost({caption, topic, selectedFile, creator, creatorName}));
+  }else{
+    toast.error('Please fill all fields');
+  }
+  
   
 };
 
@@ -57,7 +68,7 @@ const handleSubmit = (e) =>{
             </select>
             <div className='btn-container'>
               <button className='post-btn' type='submit' >Post</button>
-              <button className='discard-btn' type='button'  >Discard</button>
+              <button className='discard-btn' type='button' onClick={() => navigate('/')} >Back to Home</button>
             </div>
           </div>
         </form>

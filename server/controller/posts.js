@@ -52,4 +52,33 @@ export const postComment = async (req, res) =>{
     // res.json(updatedPost);
 };
 
+export const deleteComment =async (req, res) =>{
+    const {id} = req.params;
+    const {index} = req.body;
+
+    const post = await PostMessage.findById(id);
+    post.comments.splice(index, 1);
+
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+    res.json(updatedPost);
+};
+
+export const likePost = async (req, res) =>{
+    const {id} = req.params;
+    const {userId} = req.body;
+    if(!userId) return  res.json({message: 'Unauthenticated'});
+
+    if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('no post with that id');
+    const post = await PostMessage.findById(id);
+
+    const index = post.likes.findIndex((id) => id === String(userId));
+    if(index === -1){
+        post.likes.push(userId);
+    }else{
+        post.likes = post.likes.filter((id) => id !== String(userId));
+    }
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, {new: true});
+    res.json(updatedPost);
+};
+
 export default router;
