@@ -1,15 +1,21 @@
 import React,{useState} from 'react';
+import { Link,  useNavigate } from 'react-router-dom'
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { CardMedia } from '@material-ui/core';
 import { AiOutlineSend } from 'react-icons/ai';
-import { BsFillHeartFill, BsHeart } from 'react-icons/bs'
+import { BsFillHeartFill, BsHeart, BsArrowLeft } from 'react-icons/bs'
 import { FaRegCommentAlt, FaTimesCircle } from 'react-icons/fa'
 import Loading from '../components/Loading';
-import { deleteComment, deletePost, likePost, postComment } from '../features/createPostSlice';
+import { addToggleLike, deleteComment, deletePost, likePost, postComment, removeToggleLike } from '../features/createPostSlice';
 import FormInput from './FormInput';
 import moment from 'moment';
+import Pagination from './Pagination';
+import { getPosts } from '../features/createPostSlice';
+import Footer from './Footer';
+
+
 
 
 
@@ -17,19 +23,37 @@ import moment from 'moment';
 const Posts = () => {
   const getUser = localStorage.getItem('user');
   const localStorageUser = getUser ? JSON.parse(getUser) : null;
-  const { posts, isLoading, } = useSelector((store) => store.createPost);
+  const { posts, isLoading, searching, showAltLike, likeDelay, toggleLike } = useSelector((store) => store.createPost);
+  const { windowSize } = useSelector((store) => store.search);
   const [comment, setComment] = useState('');
   const [toggleCommentPage, setToggleCommentPage] = useState('');
+  // const [toggleLike, setToggleLike] = useState('');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleDeletePost = (id) =>{
     dispatch(deletePost(id));
   };
 
-  const handleLikeCounts = (postId) =>{
+  const handleLikeCounts = (postId, uniqueId) =>{
     const userId = localStorageUser?._id
     if(localStorageUser){
-      dispatch(likePost({postId, userId}))
+      dispatch(likePost({postId, userId}));
+      if(toggleLike === ''){
+        dispatch(addToggleLike(uniqueId));
+      }else{
+        dispatch(removeToggleLike());
+      }
+      //  setToggleLike((prevState) =>{
+      //   if (prevState === ''){
+      //     setToggleLike(uniqueId)
+      //   }else{
+      //     setToggleLike('')
+      //   }
+      //  } );
+console.log(toggleLike, 'toggle')
+      
+      // console.log(toggleLike)
     }else{
       toast.warning('Register and/or Login to react to posts')
     }
@@ -44,9 +68,7 @@ const Posts = () => {
     setToggleCommentPage(id)
   }
 
-  if(isLoading){
-    return  <Loading />
-  };
+ 
 
   const handleChange = (e) =>{
     setComment(e.target.value);
@@ -54,7 +76,6 @@ const Posts = () => {
   };
 
   const handleSubmit = (id) =>{
-    
     const finalComment = `${localStorageUser.name}:${localStorageUser._id}:${comment}`
     if(comment && localStorageUser){
       dispatch(postComment({id, finalComment}))
@@ -63,21 +84,53 @@ const Posts = () => {
     }
     setComment('');
   };
+
+   if(isLoading){
+    return  <Loading />
+  };
+  
   return (
-    <Wrapper>
-      {posts.map((post) =>{
+    <Wrapper className={isLoading && 'small-screen-width'}>
+      {searching && (
+        <button onClick={() => dispatch(getPosts())} className='all-posts-btn'><BsArrowLeft  /> {' '} All Posts</button>
+      )}
+      {posts?.map((post) =>{
         return(
-          <div key={post?._id}>
+          <div key={post?._id} >
             <div className='user-caption'>
               <div className='post-creator-icon'>{post?.creatorName?.charAt(0)}</div>
-              <span><h2>{post?.creatorName}</h2> <h3>{post.caption} <span id='created-at'>{moment(post.createdAt).fromNow()}</span></h3></span>
+                <span><h2>{post?.creatorName}</h2> <h3>{post.caption} <span id='created-at'>{moment(post.createdAt).fromNow()}</span></h3></span>
             </div>
-            <CardMedia className='media' component='video' image={post.selectedFile} /*autoPlay*/ controls />
+            {/* <CardMedia className='media-container' component='video' image={post.selectedFile} autoPlay controls /> */}
+
+            <video className='media-container'controls>
+	           {/* <source type="video/webm" src="data:video/webm;base64,GkXfowEAAAAAAAAfQoaBAUL3gQFC8......jVOrhB9DtnVTrIMQTPc="/> */}
+	            <source type="video/mp4" src={post.selectedFile}/>
+            </video>
             <div className='btn-container'>
-              <button onClick={() => handleLikeCounts(post._id)} className='like-btn' type='button'>
-                {post.likes.includes(localStorageUser?._id)? <BsFillHeartFill className='like-icon' size={20} /> 
+              {/* <button onClick={() => handleLikeCounts(post._id, post)} className='like-btn' type='button'>
+                {(post.likes.includes(localStorageUser?._id) ) ? <BsFillHeartFill className='like-icon' size={20} /> 
                   : <BsHeart className='like-icon' size={20} />}{' '}{post.likes.length}
+              </button> */}
+              
+            <button onClick={(e) => {
+              e.target.value = post._id
+              const uniqueId = e.target.value
+              handleLikeCounts(post._id, uniqueId)
+              }} className='like-btn' type='button' disabled={likeDelay}>
+                {showAltLike ? (
+                <div>
+                  {((toggleLike === post._id) ? <BsFillHeartFill className='like-icon' size={20} /> 
+                  : <BsHeart className='like-icon' size={20} />)}{' '}{post.likes.includes(localStorageUser?._id) ? post.likes.length - 1 : post.likes.length + 1}
+                </div>) :(
+                  <div>
+                    {(post.likes.includes(localStorageUser?._id) ) ? <BsFillHeartFill className='like-icon' size={20} /> 
+                     : <BsHeart className='like-icon' size={20} />}{' '}{post.likes.length}
+                  </div>
+                )} 
+                
               </button>
+
              <div className='comment-delete-btn-container'>
                 <button className='show-comment-btn' type='button' onClick={() => handleShowComment(post?._id)}>
                   <FaRegCommentAlt size={13} />{' '}{post?.comments?.length}{' '}{post?.comments?.length <= 1 ? 'Comment' : 'Comments'}
@@ -122,7 +175,7 @@ const Posts = () => {
                             {(c.split(':')[1] === localStorageUser?._id) && (
                               <div className='delete-comment-btn_container'>
                                 <button className='delete-comment-btn' onClick={() => handleDeleteComment(post?._id, index)} type='button'>
-                                Delete
+                                  Delete
                                 </button>
                                </div>
                             )}
@@ -138,6 +191,12 @@ const Posts = () => {
           </div>
         )
       })}
+      {!searching && <Pagination />}
+      {(searching && posts?.result?.length > 0) && (
+        <button onClick={() => dispatch(getPosts())} className='all-posts-btn' type='button'><BsArrowLeft  /> {' '} All Posts</button>
+      )}
+
+    {windowSize <= 750 && <Footer />}
     </Wrapper>
   )
 };
@@ -145,11 +204,24 @@ const Posts = () => {
 const Wrapper = styled.div`
 width: 70%;
 margin-left: 380px;
+/* position: relative; */
 
+.all-posts-btn{
+  margin: 20px 0 20px 20px;
+  height: 40px;
+  width: 150px;
+  border-radius: 5px;
+  background-color: white;
+  border: solid #e63295;
+  color: #e63295;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
 .comment-container{
   background-color: var(--backgroundColor);
   position: fixed;
-  right: 85px;
+  right: 60px;
   left: 475px;
   top: 90px;
   height: 90%;
@@ -161,7 +233,7 @@ margin-left: 380px;
 .comment-container-2{
   background-color: var(--backgroundColor);
   position: fixed;
-  right: 90px;
+  right: 60px;
   left: 475px;
   top: 80px;
   height: 90%;
@@ -180,7 +252,7 @@ margin-left: 380px;
 }
 .close-comment-btn{
   position: fixed;
-  right: 110px;
+  right: 80px;
   top: 95px;
   z-index: 1;
   cursor: pointer;
@@ -213,7 +285,7 @@ margin-left: 380px;
 .delete-comment-btn_container{
   margin-top: -10px;
 }
-.media {
+.media-container {
   padding: 20px 20px 20px 20px;
   margin: 0 0 50px 100px;
   height: 500px;
@@ -277,6 +349,100 @@ hr{
   border: none;
   height: 2px;
 }
+/* .btn-container{
+ margin: -40px 120px 20px 120px;
+ display: flex;
+ justify-content: space-between;
+} */
+@media (max-width: 1250px) {
+    width: 80%;
+    margin-left: 300px;
+    .comment-container{
+      left: 400px ;
+      right: 35px;
+    }
+    .comment-container-2{
+      left: 400px ;
+      right: 35px;
+    }
+    .close-comment-btn{
+      right: 50px;
+    }
+  }
+@media (max-width: 1150px) {
+    width: 80%;
+    margin-left: 250px;
+     .comment-container{
+      left: 300px ;
+    }
+    .comment-container-2{
+      left: 300px ;
+    }
+  }
+@media (max-width: 1100px) {
+    width: 80%;
+    margin-left: 200px;
+    .media-container {
+      width: 500px;
+    }
+    
+  }
+@media (max-width: 950px) {
+    margin-left: 150px;
+    .media-container {
+      width: 400px;
+    }
+    .btn-container{
+      width: 280px;
+    }
+     .comment-container{
+      left: 267px ;
+    }
+    .comment-container-2{
+      left: 267px ;
+    }
+    
+  }
+  @media (max-width: 950px) {
+    .media-container {
+      width: 300px;
+    }
+  }
+   @media (max-width: 750px) {
+    margin-left: 0px;
+    /* margin-top: -50px ; */
+    width: 100%;
+    .media-container{
+      width:100%;
+      margin-left: 0px;
+    }
+    .user-caption{
+      margin-left: 0px;
+    }
+    .post-creator-icon{
+      height: 40px;
+      width: 40px;
+      font-size: 25px;
+      margin-left: 0px;
+    }
+    .btn-container{
+      width:100%;
+      margin-left: 0px;
+    }
+     .comment-container{
+      left: 45px ;
+      top: 80px;
+    }
+    .comment-container-2{
+      left: 45px ;
+      top: 80px;
+    }
+    .footer{
+      display: block;
+    }
+    
+    
+  }
 `
 
 export default Posts

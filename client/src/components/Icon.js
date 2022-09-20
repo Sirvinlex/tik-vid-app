@@ -26,7 +26,10 @@ const Wrapper = styled.div`
   margin-left: 20px;
   margin-top: 25px;
 }
-
+@media (max-width: 750px) {
+  height: 110px;
+  margin-top: 5px ;
+}
 
 `
 export default Icon

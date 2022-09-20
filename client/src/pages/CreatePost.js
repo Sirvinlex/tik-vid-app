@@ -11,6 +11,9 @@ import { toast } from 'react-toastify';
 
 
 const CreatePost = () => {
+
+
+
 const getUser = localStorage.getItem('user');
 const localStorageUser = getUser ? JSON.parse(getUser) : null;
 const creator = localStorageUser?._id;
@@ -43,9 +46,10 @@ const handleSubmit = (e) =>{
         <form onSubmit={handleSubmit} className='form-container'>
           <div className='file-container'> 
             <h2>UPload Video</h2>
+            
             <h4>Select and upload video to your account</h4>
             <div className='file'>
-              <p>Selected video should be less than 14MB</p>
+              <p>Selected video should be <span>less than 14MB</span></p>
               <FileBase
                 type='file'
                 multiple={false}
@@ -80,7 +84,10 @@ const handleSubmit = (e) =>{
 const Wrapper = styled.div`
 padding: 50px 0px 50px 0px;
 margin-top: 100px;
-
+p span{
+  color: #e63295;
+  font-weight: 600;
+}
 .container{
   
   background-color: white;
@@ -99,6 +106,7 @@ margin-top: 100px;
   display: flex;
   flex-direction: column;
   padding: 100px 100px 50px 100px;
+  
 }
 
 .btn-container{
@@ -143,7 +151,39 @@ margin-top: 100px;
   
 }
 
-
+@media (max-width: 917px) {
+  .post-btn{
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .discard-btn{
+    width: 100%;
+  }
+  }
+  @media (max-width: 750px) {
+  .container{
+      background-color: white;
+      border-radius: 10px;
+      height: fit-content;
+      width: 80%;
+      margin-left: auto;
+    }
+    .file-container{
+      padding-left: 100px;
+      padding-right: 30px;
+      margin-bottom: -50px;
+    }
+    .file{
+      margin-top: -50px;
+    }
+   .form-container{
+      height: 100%;
+      display: grid;
+      grid-template-columns: 100% ;
+      grid-template-rows:  auto auto;
+    }
+  }
 `
 
 export default CreatePost

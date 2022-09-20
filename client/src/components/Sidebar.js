@@ -1,16 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 import Icon from './Icon';
-import SuggestedAccount from './SuggestedAccount';
+import Footer from './Footer';
 import PopularTopic from './PopularTopic';
+import { useSelector } from 'react-redux';
 
 
 const Sidebar = () => {
+  const { windowSize } = useSelector((store) => store.search);
   return (
     <Wrapper>
         <Icon />
         <PopularTopic />
-        <SuggestedAccount />
+        {windowSize > 750 && <Footer />}
     </Wrapper>
   )
 }
@@ -22,10 +24,24 @@ display: grid;
 grid-template-columns: 100%;
 grid-template-rows: 80px auto auto;
 grid-row-gap: 10px;
-height: fit-content;
-overflow-y: auto;
+height: 100vh;
 position: fixed;
+overflow-y: auto;
+overflow-x: hidden;
 width: 28%;
+@media (max-width: 1250px) {
+    width: 20%;
+  }
+@media (max-width: 850px) {
+grid-template-rows: 100px auto auto;
+}
+@media (max-width: 750px) {
+  position: static;
+  display: inline;
+  width: 100%;
+ 
+
+}
 `
 
 export default Sidebar

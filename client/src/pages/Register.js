@@ -1,16 +1,17 @@
-import React from 'react';
+import React,{ useEffect } from 'react';
 import styled from 'styled-components';
-import {ImVideoCamera} from 'react-icons/im'
 import FormInput from '../components/FormInput';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleInputs, logUser, regUser, registerForm, loginForm } from '../features/userSlice';
 import { toast } from 'react-toastify';
+import logo from '../logo/logo.png'
 
 
 
 const Register = () => {
-  const { name, email, password, login } = useSelector((store) => store.user)
+
+  const { name, email, password, login, user } = useSelector((store) => store.user)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,7 +34,6 @@ const Register = () => {
     if(login){
       if(email && password){
         dispatch(logUser({email, password}))
-        navigate('/')
       }else{
         toast.error('Please fill all fields')
       }
@@ -45,17 +45,24 @@ const Register = () => {
         toast.error('Please fill all fields')
       }
     }
-    
   }
+  useEffect(() => {
+    if (user.name && user._id) {
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    }
+  }, [user, navigate]);
   return (
     <Wrapper>
       <div className='main-div-container'>
-        <Link to='/' className='home-btn' >Back to home</Link>
+        {/* <Link to='/' className='home-btn' >Back to home</Link> */}
+        <Link to='/' className='home-btn' >Back to Home</Link>
         <div className='reg-container'>
           <div><h3></h3></div>
           <div className='reg-main'>
             <hr />
-              <ImVideoCamera size={50} className='logo'/> <span className='logo-text'>TIK VID</span>
+              <img src={logo} alt='logo' className='logo' height={50} width={150} />
               <h1>{login ? 'Login' : 'Register'}</h1>
               <div className='form-container'>
                 <form onSubmit={handleSubmit} className='form'>
@@ -139,19 +146,14 @@ hr{
   border-top-left-radius:10px;
   border-top-right-radius:10px;
 }
-.logo-text{
-  font-size: 20px;
-  font-weight: 600;
-  color: #e63295;
-  padding-bottom: 20px;
-}
+
 .reg-main>h1{
   margin: -5px 0 0 150px;
   font-weight: 300;
 }
 .logo{
   color: #e63295;
-  margin-left: 150px;
+  margin-left: 120px;
 }
 .logo-container{
 }
@@ -181,7 +183,77 @@ hr{
   color: #e63295;
   cursor: pointer;
 }
+@media (max-width: 1100px) {
+   .reg-container{
+    margin-left:130px;
+   }
+}
+@media (max-width: 1000px) {
+   .reg-container{
+    margin-left:70px;
+   }
+}
+@media (max-width: 900px) {
+   .reg-container{
+    margin-left:50px;
+   }
+   .home-btn{
+    margin-left: 50px;
+   }
+}
+@media (max-width: 850px) {
+   .reg-container{
+    margin-left:20px;
+   }
+   .home-btn{
+    margin-left: 15px;
+   }
+}
 
+@media (max-width: 850px) {
+  .main-div-container{
+    flex-direction: column;
+    margin-left: 30px;
+    /* margin-right: 90px; */
+    width: fit-content;
+  }
+  .reg-container{
+    width: 80vw;
+  }
+  .home-btn{
+    width: 80vw;
+    background-color: white;
+    color: #e63295;
+  }
+  .reg-main>h1 {
+    margin-left: 220px;
+  }
+  .logo{
+    margin-left: 200px;
+  }
+  
+}
+@media (max-width: 750px) {
+  .reg-main>h1 {
+    margin-left: 170px;
+  }
+  
+  .logo{
+    margin-left: 150px;
+  }
+}
+@media (max-width: 600px) {
+  .reg-main{
+    margin-left: 34px;
+  }
+  .reg-main>h1 {
+    margin-left: 110px;
+  }
+  
+  .logo{
+    margin-left: 90px;
+  }
+}
 `
 
 export default Register

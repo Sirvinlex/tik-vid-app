@@ -28,20 +28,22 @@ const initialState = {
 export const regUser = createAsyncThunk('register/user', async (regData, thunkAPI) =>{
     try {
         const {data} = await api.registerUser(regData);
-        console.log(data, 'register data')
-        return data
+        return data.message
     } catch (error) {
-        console.log(error)
+        return  thunkAPI.rejectWithValue(error.response.data.message);
     }
 
 });
 
 export const logUser = createAsyncThunk('login/user', async (loginData, thunkAPI) =>{
-     try {
+    try {
         const {data} = await api.loginUser(loginData);
+        console.log(data, 'login')
         return data.result
     } catch (error) {
         console.log(error)
+        
+        return  thunkAPI.rejectWithValue(error.response.data.message);
     }
 });
 
@@ -63,6 +65,7 @@ const userSlice = createSlice({
             const localStorageUser = getUser ? JSON.parse(getUser) : null;
             toast.success(`Goodbye ${localStorageUser?.name}`)
             localStorage.removeItem('user');
+            state.user= {};
             state.toggleUser= false;
             state.creator= '';
              
@@ -74,11 +77,11 @@ const userSlice = createSlice({
         },
         [regUser.fulfilled]: (state, actions) => {
             state.login = true;
-            state.password = ''
-            toast.success('Registration successful! Proceed to Login')
+            state.password = '';
+            toast.success(actions.payload);
         },
         [regUser.rejected]: (state, actions) => {
-            
+            toast.error(actions.payload)
         },
         [logUser.pending]: (state, actions) => {
             
@@ -87,9 +90,12 @@ const userSlice = createSlice({
             state.user= payload;
             localStorage.setItem('user', JSON.stringify(state.user));
             state.toggleUser= true;
-            toast.success(`Welcome back ${state?.user?.name}`)
+            state.navigateToHome= true;
+            toast.success(`Welcome ${state?.user?.name}`)
         },
         [logUser.rejected]: (state, actions) => {
+            toast.error(actions.payload);
+            state.navigateToHome= false;
             
         },
     }

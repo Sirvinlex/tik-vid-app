@@ -25,13 +25,17 @@ export const registerUser = async (req, res) =>{
     const { name, email, password, } = req.body;
     try {
         const existingUser = await User.findOne({email});
-        if(existingUser) return res.status(400).json({message: 'User already exist'});
+        if(existingUser) return res.status(400).json({message: 'User with this email already exist'});
         const hashedPassword = await bcrypt.hash(password, 12)
 
         const result = User.create({ email, password: hashedPassword, name })
         const token = jwt.sign({email: result.email, id: result._id }, process.env.AUTH_KEY, {expiresIn: '1h' });
-        res.status(200).json({result, token});
-
+        res.status(200).json({result, token, message:'Registration successful, proceed to Login'});
+        // if(existingUser) {
+        //     return res.status(200).json({message: 'User with this email already exist'});
+        // }else{
+        //     return res.status(200).json({result, token, message:'Registration successful, proceed to Login'});
+        // }
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong.' });
 
