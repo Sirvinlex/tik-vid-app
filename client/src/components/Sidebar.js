@@ -7,19 +7,16 @@ import { useSelector } from 'react-redux';
 
 
 const Sidebar = () => {
-  const { windowSize } = useSelector((store) => store.search);
   return (
     <Wrapper>
         <Icon />
         <PopularTopic />
-        {windowSize > 750 && <Footer />}
+        <div className='footer'><Footer /></div>
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div`
-/* border: solid black; */
-/* height: 80vh; */
 display: grid;
 grid-template-columns: 100%;
 grid-template-rows: 80px auto auto;
@@ -29,6 +26,7 @@ position: fixed;
 overflow-y: auto;
 overflow-x: hidden;
 width: 28%;
+
 @media (max-width: 1250px) {
     width: 20%;
   }
@@ -39,7 +37,9 @@ grid-template-rows: 100px auto auto;
   position: static;
   display: inline;
   width: 100%;
- 
+  .footer{
+    display: none;
+  }
 
 }
 `

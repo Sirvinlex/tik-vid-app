@@ -1,20 +1,13 @@
-// import mongoose from "mongoose";
 import  express  from "express";
 import mongoose from "mongoose";
 import PostMessage from "../models/postMessage.js";
-
-
-// import router from "../routes/posts.js";
 
 const router = express.Router();
 
 export const getPosts = async (req, res) =>{
    const { page } = req.query;
    try {
-    //    const posts = await PostMessage.find();
-    //    res.status(200).json(posts);
-
-       const LIMIT = 5;
+     const LIMIT = 5;
        const startIndex = (Number(page) - 1) * LIMIT; //get the starting index of each posts
        const total = await PostMessage.countDocuments({});
 
@@ -27,9 +20,7 @@ export const getPosts = async (req, res) =>{
 
 export const getPostsBySearch = async (req, res) =>{
     const {searchQuery, category} = req.query;
-    // const title = new RegExp(searchQuery, 'i');
-        // const posts = await PostMessage.find({ $or: [{ title }, { tags: { $in: tags.split(',') }}]});
-    try {
+     try {
         const caption = new RegExp(searchQuery, 'i');
         const topic = new RegExp(category, 'i');
         const posts = await PostMessage.find({ $or: [{ caption }, { topic }]});
@@ -42,7 +33,7 @@ export const getPostsBySearch = async (req, res) =>{
 
 export const createPosts = async (req, res) =>{
     const post = req.body;
-    const newPost = new PostMessage({ ...post, /*creator: req.userId,*/ createdAt: new Date().toISOString() });
+    const newPost = new PostMessage({ ...post, createdAt: new Date().toISOString() });
     try {
         await newPost.save();
         res.status(201).json(newPost);
@@ -56,7 +47,7 @@ export const deletePost = async (req, res) =>{
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('no post with that id');
 
     await PostMessage.findByIdAndRemove(id);
-    res.json({message: 'Post deleted successfully', id: id})
+    res.json({message: 'Post deleted successfully'})
     
 };
 
@@ -66,12 +57,10 @@ export const postComment = async (req, res) =>{
 
     const post = await PostMessage.findById(id);
     
-    post.comments.push(comments);
+    post.comments.unshift(comments);
     
     const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
     res.json(updatedPost);
-    // const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
-    // res.json(updatedPost);
 };
 
 export const deleteComment =async (req, res) =>{

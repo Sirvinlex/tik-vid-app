@@ -1,16 +1,11 @@
 import React from 'react';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { useSelector } from 'react-redux';
-
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     search: '',
     category: '',
-    windowSize: window.innerWidth,
-
+    windowSize: window.innerWidth, 
 };
-
-
 
 const searchSlice = createSlice({
     name: 'search',
@@ -25,10 +20,12 @@ const searchSlice = createSlice({
         resetSearch: (state) =>{
             state.search= '';
         },
+         resetCategory:(state) =>{
+            state.category= '';
+        },
         resizeWindow:(state, {payload}) =>{
             state.windowSize= payload;
         },
-        
         
     },
     

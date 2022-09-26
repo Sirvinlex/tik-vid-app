@@ -13,7 +13,7 @@ export const loginUser = async (req, res) =>{
         if(!existingUser) return res.status(404).json({message: 'User does not exist'});
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
         if(!isPasswordCorrect) return res.status(400).json({message: 'Invalid Credentials'});
-        const token = jwt.sign({email: existingUser.email,  id: existingUser._id }, process.env.AUTH_KEY, {expiresIn: '1h'});
+        const token = jwt.sign({email: existingUser.email,  id: existingUser._id }, process.env.AUTH_KEY,);
 
         res.status(200).json({result: existingUser, token});
     } catch (error) {
@@ -29,13 +29,9 @@ export const registerUser = async (req, res) =>{
         const hashedPassword = await bcrypt.hash(password, 12)
 
         const result = User.create({ email, password: hashedPassword, name })
-        const token = jwt.sign({email: result.email, id: result._id }, process.env.AUTH_KEY, {expiresIn: '1h' });
+        const token = jwt.sign({email: result.email, id: result._id }, process.env.AUTH_KEY,);
         res.status(200).json({result, token, message:'Registration successful, proceed to Login'});
-        // if(existingUser) {
-        //     return res.status(200).json({message: 'User with this email already exist'});
-        // }else{
-        //     return res.status(200).json({result, token, message:'Registration successful, proceed to Login'});
-        // }
+        
     } catch (error) {
         res.status(500).json({ message: 'Something went wrong.' });
 

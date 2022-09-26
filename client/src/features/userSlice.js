@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import * as api from '../api';
-import axios from 'axios';
 
 const initialState = {
     name: '',
@@ -10,21 +9,10 @@ const initialState = {
     login: true,
     user: {},
     toggleUser: false,
+    loading: false,
 };
 
-// export const addUserToLocalStorage = (user) => {
-//   localStorage.setItem('user', JSON.stringify(user));
-// };
 
-// export const removeUserFromLocalStorage = () => {
-//   localStorage.removeItem('user');
-// };
-
-// export const getUserFromLocalStorage = () => {
-//   const result = localStorage.getItem('user');
-//   const user = result ? JSON.parse(result) : null;
-//   return user;
-// };
 export const regUser = createAsyncThunk('register/user', async (regData, thunkAPI) =>{
     try {
         const {data} = await api.registerUser(regData);
@@ -73,24 +61,27 @@ const userSlice = createSlice({
     },
     extraReducers:{
         [regUser.pending]: (state, actions) => {
+            state.loading=true;
             
         },
         [regUser.fulfilled]: (state, actions) => {
             state.login = true;
             state.password = '';
+            state.loading=false;
             toast.success(actions.payload);
         },
         [regUser.rejected]: (state, actions) => {
             toast.error(actions.payload)
         },
         [logUser.pending]: (state, actions) => {
-            
+            state.loading=true;
         },
         [logUser.fulfilled]: (state, {payload}) => {
             state.user= payload;
             localStorage.setItem('user', JSON.stringify(state.user));
             state.toggleUser= true;
             state.navigateToHome= true;
+            state.loading=false;
             toast.success(`Welcome ${state?.user?.name}`)
         },
         [logUser.rejected]: (state, actions) => {

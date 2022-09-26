@@ -8,10 +8,9 @@ import { toast } from 'react-toastify';
 import logo from '../logo/logo.png'
 
 
-
 const Register = () => {
 
-  const { name, email, password, login, user } = useSelector((store) => store.user)
+  const { name, email, password, login, user, loading } = useSelector((store) => store.user)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -50,16 +49,14 @@ const Register = () => {
     if (user.name && user._id) {
       setTimeout(() => {
         navigate('/');
-      }, 1000);
+      }, 500);
     }
   }, [user, navigate]);
   return (
     <Wrapper>
       <div className='main-div-container'>
-        {/* <Link to='/' className='home-btn' >Back to home</Link> */}
         <Link to='/' className='home-btn' >Back to Home</Link>
         <div className='reg-container'>
-          <div><h3></h3></div>
           <div className='reg-main'>
             <hr />
               <img src={logo} alt='logo' className='logo' height={50} width={150} />
@@ -78,7 +75,11 @@ const Register = () => {
                     <FormInput  type='password' name='password' value={password} id='password' labelText='Password' handleChange={handleChange} />
                     </>
                   )}
-                  <button type='submit' className='reg-btn'>{login ? 'Login' : 'Register'}</button>
+                  {loading ? (
+                    <button disabled={loading} type='submit' className='reg-btn'>Loading...</button>
+                  ) : (
+                    <button disabled={loading} type='submit' className='reg-btn'>{login ? 'Login' : 'Register'}</button>
+                  )}
                   <p>
                     {login ? "Don't have an account?" : "Already have an account?"} <span></span>
                     <button className='toggle-btn' type='button' onClick={handleToggleLogin}>{!login? 'Login' : 'Register'}</button>
@@ -214,7 +215,6 @@ hr{
   .main-div-container{
     flex-direction: column;
     margin-left: 30px;
-    /* margin-right: 90px; */
     width: fit-content;
   }
   .reg-container{

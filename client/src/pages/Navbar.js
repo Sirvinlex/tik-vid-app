@@ -1,15 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { Link,  useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { ImVideoCamera } from 'react-icons/im';
 import { FaUserCircle } from 'react-icons/fa';
 import { AiOutlinePlus, AiOutlineLogout } from 'react-icons/ai';
 import { BsSearch } from 'react-icons/bs';
 import { logoutAccount } from '../features/userSlice';
 import { getPostsBySearch, } from '../features/createPostSlice';
-import { handleMainSearchInput, resetSearch } from '../features/searchSlice';
+import { handleMainSearchInput, resetCategory, resetSearch } from '../features/searchSlice';
 import logo from '../logo/logo.png'
 
 
@@ -48,8 +47,7 @@ const Navbar = () => {
   if(search.trim() || category){
     dispatch(getPostsBySearch({search, category}));
     dispatch(resetSearch());
-    // navigate(`/posts/search?searchQuery=${ search || 'none'}&category=${ category || 'none' }`);
-
+    dispatch(resetCategory());
   }else{
     navigate('/');
   }
@@ -60,7 +58,7 @@ const Navbar = () => {
       <div className='navbar-container'>
         <img src={logo} alt='logo' className='logo' height={50} width={150} />
         <div>
-          <input placeholder='' className='input' type='text' value={search} onChange={handleChange} />
+          <input placeholder='Search Post' type='text' value={search} onChange={handleChange} />
           <button className='search-btn' onClick={handleSearch} type='button'>{windowSize <= 500 ? <BsSearch /> : 'Search'}</button>
         </div> 
         
@@ -109,15 +107,22 @@ z-index: 1;
 background-color: white;
 margin: -10px -10px 0px -10px;
 
-.input {
+input {
     background-color: var(--backgroundColor);
     border: solid var(--backgroundColor);
     width: 300px;
     height: 40px;
-    /* border-radius: 50px; */
     border-bottom-left-radius: 50px;
     border-top-left-radius: 50px;
     margin-bottom: 10px;
+    text-align: center;
+}
+::-webkit-input-placeholder {
+  text-align: center;
+}
+
+:-moz-placeholder {
+  text-align: center;
 }
 .search-btn{
   height: 40px;
@@ -220,7 +225,7 @@ hr{
   .search-btn{
     width: 80px;
   }
-  .input{
+  input{
     width: 200px;
   }
 }
@@ -262,7 +267,7 @@ hr{
   .search-btn{
     width: 50px;
   }
-  .input{
+  input{
     width: 150px;
   }
   .reg-link{
@@ -281,7 +286,7 @@ hr{
   .search-btn{
     width: 50px;
   }
-  .input{
+  input{
     width: 100px;
   }
 }
@@ -291,12 +296,10 @@ hr{
     height: 30px;
   }
   .search-btn{
-    /* margin-top: 7px; */
     width: 50px;
     height: 30px;
   }
-  .input{
-    /* margin-top: 7px; */
+  input{
     width: 100px;
     height: 30px;
   }

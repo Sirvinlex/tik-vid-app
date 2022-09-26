@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API = axios.create({baseURL: 'http://localhost:5000' })
 const initialState = {
     caption: '',
     topic: 'Development',
@@ -15,17 +13,14 @@ const initialState = {
     isLoading: false,
     searching: false,
     page: 1,
-    showAltLike: false,
-    likeDelay:false,
-    toggleLike: '',
+    sendingComment: false,
+    sendingPost: false,
+    isLikePending: false,
 };
 export const getPosts = createAsyncThunk('getPosts/allPosts', async (page, thunkAPI) =>{
-
-    // let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`;
     
   try {
     const {data} = await api.fetchPosts(page); 
-    console.log(data)
     return data
     
   } catch (error) {
@@ -84,11 +79,11 @@ export const likePost = createAsyncThunk('post/likePost', async (likePostData, t
     }
 });
 
-export const deletePost = createAsyncThunk('post/createPost', async (id, thunkAPI) =>{
+export const deletePost = createAsyncThunk('post/deletePost', async (id, thunkAPI) =>{
     try {
-        const {data} = await api.deletePost(id);
+        await api.deletePost(id);
                
-        return data;
+        return id;
     } catch (error) {
         
     }
@@ -123,7 +118,8 @@ const createPostSlice = createSlice({
         },
         removeToggleLike:(state) =>{
             state.toggleLike='';
-        }
+        },
+        
         
     },
     extraReducers: {
@@ -146,43 +142,28 @@ const createPostSlice = createSlice({
             state.isLoading= true;
         },
          [getPostsBySearch.fulfilled]: (state, {payload}) => {
-            state.posts= payload;
+            state.posts= payload.result;
             state.isLoading=false;
             if(payload.result.length === 0) toast.warning('No post match your query');
             state.searching= true;
         },
-    
-        // [createPost.pending]: (state, actions) => {
-
-        // },
+        [createPost.pending]: (state, {payload}) => {
+            state.caption = '';
+            state.sendingPost= true;
+        },
         [createPost.fulfilled]: (state, {payload}) => {
-            state.caption = ''
+            state.sendingPost=false;
             toast.success('Post successfully created');
+            state.caption = '';
             
         },
-        [createPost.rejected]: (state, actions) => {
-
-        },
-        [likePost.pending]: (state, {payload}) => {
-            state.showAltLike= true;
-            state.likeDelay= true;
-        },
-        [likePost.fulfilled]: (state, {payload}) => {
-            state.posts= state.posts.map((post) => post._id === payload._id ? payload : post);
-            state.showAltLike= false;
-            state.likeDelay= false;
-        },
-        [postComment.pending]: () => {
-            toast.warning('Uploading comment...')
+        [postComment.pending]: (state) => {
+            state.sendingComment=true;
         },
         [postComment.fulfilled]: (state, {payload}) => {
             state.posts= state.posts.map((post) => post._id === payload._id ? payload : post);
             toast.success('Comment successfully added');
-        },
-        
-        [deletePost.fulfilled]: (state, {payload}) => {
-            state.posts= state.posts.filter((post) => post._id !== payload.id);
-            toast.success('Post deleted successfully !');
+            state.sendingComment=false;
         },
         [deleteComment.pending]: (state, {payload}) => {
             toast.warning('Deleting your comment...');
@@ -191,10 +172,22 @@ const createPostSlice = createSlice({
             state.posts= state.posts.map((post) => post._id === payload._id ? payload : post);
             toast.success('Comment successfully deleted !')
         },
+        [likePost.pending]: (state) => {
+            state.isLikePending=true;
+        },
+        [likePost.fulfilled]: (state, {payload}) => {
+            state.posts= state.posts.map((post) => post._id === payload._id ? payload : post);
+            state.isLikePending=false;
+        },
+        
+        [deletePost.fulfilled]: (state, {payload}) => {
+            state.posts= state.posts.filter((post) => post._id !== payload);
+            toast.success('Post successfully deleted !')
+        },
+        
     },
     
-      
 });
 
-export const { handleInputs, getFiles, increasePageCount, decreasePageCount, addToggleLike, removeToggleLike } = createPostSlice.actions;
+export const { handleInputs, getFiles, increasePageCount, decreasePageCount, addToggleLike, removeToggleLike, } = createPostSlice.actions;
 export default createPostSlice.reducer;

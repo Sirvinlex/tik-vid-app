@@ -12,4 +12,3 @@ export const postComment = (comments, id) => API.post(`/posts/${id}/postComment`
 export const likePost = (postId, userId) => API.post(`/posts/${postId}/likePost`, {userId})
 export const deleteComment = (id, index) => API.patch(`/posts/${id}/deleteComment`, {index})
 
-// export const fetchPosts = (page) => API.get(`/posts?page=${page}`);

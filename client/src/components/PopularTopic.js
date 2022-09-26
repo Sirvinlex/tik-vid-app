@@ -1,47 +1,44 @@
-import React,{useEffect, useState} from 'react';
+import React,{useEffect,} from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { handleCategoryInput, resetSearch } from '../features/searchSlice';
+import { handleCategoryInput, resetCategory, resetSearch } from '../features/searchSlice';
 import { useNavigate } from 'react-router-dom';
-import { getPostsBySearch } from '../features/createPostSlice';
-import WindowSize from './WindowSize';
+import { getPostsBySearch,  } from '../features/createPostSlice';
 
 
 const PopularTopic = () => {
-  const { topicOptions } = useSelector((store) => store.createPost);
+  const { topicOptions, isLoading } = useSelector((store) => store.createPost);
   const { search, category } = useSelector((store) => store.search)
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  
+  useEffect(()=>{
+       if(search.trim() || category){
+         dispatch(getPostsBySearch({search, category}));
+         dispatch(resetSearch());
+         dispatch(resetCategory())
+         // navigate(`/posts/search?searchQuery=${ search || 'none'}&category=${ category || 'none' }`);
+         }else{
+         navigate('/');
+       }
 
-  const handleClick = (topic) =>{
-    dispatch(handleCategoryInput(topic))
-    
-    
-    if(search.trim() || category){
-    dispatch(getPostsBySearch({search, category}));
-    dispatch(resetSearch());
-    
-    // navigate(`/posts/search?searchQuery=${ search || 'none'}&category=${ category || 'none' }`);
+  }, [category])
 
-  }else{
-    navigate('/');
-  }
-  
-  };
-
-   
   return (
     <Wrapper>
       <hr/>
-      <WindowSize/>
       <h1>Popular topics</h1>
-      <h3>Double click the buttons to search popular posts</h3>
       <div className='topic-container'>
         {topicOptions.map((topic, index) =>{
+              
           return(
-            <button onClick={() => handleClick(topic)} className='topic-btn' type='button'  key={index}>{topic}</button>
+            <button onClick={() =>{
+              dispatch(handleCategoryInput(topic));
+             }} className='topic-btn' type='button'  key={index}
+             disabled={isLoading}
+            >
+              {topic}
+            </button>
           )
         })}
       </div>

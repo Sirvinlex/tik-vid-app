@@ -1,19 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getPosts, createPost, handleInputs, getFiles } from '../features/createPostSlice';
+import { createPost, handleInputs, getFiles } from '../features/createPostSlice';
 import styled from 'styled-components';
 import FileBase from 'react-file-base64';
 import FormInput from '../components/FormInput';
 import { toast } from 'react-toastify';
 
-
-
-
 const CreatePost = () => {
-
-
-
 const getUser = localStorage.getItem('user');
 const localStorageUser = getUser ? JSON.parse(getUser) : null;
 const creator = localStorageUser?._id;
@@ -29,16 +23,16 @@ const handleChange = (e) =>{
 
 const handleSubmit = (e) =>{
   e.preventDefault();
-  if(caption && topic && selectedFile){
-    dispatch(createPost({caption, topic, selectedFile, creator, creatorName}));
+    if(localStorageUser){
+      if(caption && topic && selectedFile){
+      dispatch(createPost({caption, topic, selectedFile, creator, creatorName}));
+    }else{
+      toast.error('Please fill all fields');
+    }
   }else{
-    toast.error('Please fill all fields');
-  }
-  
-  
+    toast.warning('Register and/or Login  to create a Posts')
+  }  
 };
-
-
 
   return (
     <Wrapper className='create-post'>
@@ -59,8 +53,7 @@ const handleSubmit = (e) =>{
             </div>
           </div>
           <div className='details-container'>
-            {/* <label htmlFor='caption'>Caption</label>
-            <input className='input' type='text' name='caption' value={caption} id='caption' onChange={handleChange}/> */}
+            {!localStorageUser && <h3 style={{color:'red'}}>Register and/or Login  to create a Posts</h3>}
             <FormInput  type='text' name='caption' value={caption} id='caption' labelText='Caption' handleChange={handleChange} />
             <label className='topic-label' htmlFor='topic'>Topic</label>
             <select className='form-input' name='topic' value={topic}  onChange={handleChange}>
@@ -72,7 +65,7 @@ const handleSubmit = (e) =>{
             </select>
             <div className='btn-container'>
               <button className='post-btn' type='submit' >Post</button>
-              <button className='discard-btn' type='button' onClick={() => navigate('/')} >Back to Home</button>
+              <button className='back-home-btn' type='button' onClick={() => navigate('/')} >Back to Home</button>
             </div>
           </div>
         </form>
@@ -123,7 +116,7 @@ p span{
   color: white;
   cursor: pointer;
 }
-.discard-btn{
+.back-home-btn{
   height: 40px;
   width: 150px;
   border-radius: 5px;
@@ -157,7 +150,7 @@ p span{
     margin-top: 10px;
     margin-bottom: 10px;
   }
-  .discard-btn{
+  .back-home-btn{
     width: 100%;
   }
   }

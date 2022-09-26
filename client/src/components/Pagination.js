@@ -1,25 +1,12 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux'
-import { decreasePageCount, getPosts, increasePageCount } from '../features/createPostSlice';
+import { decreasePageCount, increasePageCount } from '../features/createPostSlice';
 import styled from 'styled-components';
 
 
-
-// function useQuery(){
-//     return new URLSearchParams(useLocation().search);
-// }
-
-
-  
-
 const Pagination = () => {
-  const { isLoading, page } = useSelector((store) => store.createPost);
   const dispatch = useDispatch();
 
-// const dispatch = useDispatch();
-// const query = useQuery();
-// const pages = query.get('page') || 1;
   return (
     <Wrapper>
       <button className='page-btn' onClick={() =>{
