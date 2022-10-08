@@ -18,7 +18,6 @@ const MainPosts = ({post}) => {
   const [toggleCommentPage, setToggleCommentPage] = useState('');
   const dispatch = useDispatch();
 
-const hasLikedPost = post.likes.find((like) => like === userId);
 
   
   const handleDeletePost = (id) =>{
@@ -107,10 +106,11 @@ const hasLikedPost = post.likes.find((like) => like === userId);
                       {localStorageUser? (
                         <div className='comment-form-container'>
                           <form onSubmit={(e) => e.preventDefault()}>
-                            <FormInput  type='text' name='comments' value={comment} id='comments'  
+                            <FormInput className='comment-input' type='text' name='comments' value={comment} id='comments'  
                             handleChange={handleChange} 
                             placeholder='Write a Comment'
                             />
+                             
                           </form>
                           <button onClick={() => handleSubmit(post._id)} className='send-comment-btn' type='button'><AiOutlineSend size={30}/></button>
                         </div>
@@ -151,7 +151,9 @@ const hasLikedPost = post.likes.find((like) => like === userId);
 }
 
 const Wrapper = styled.div`
-
+.comment-input{
+  height: 35px;
+}
 .comment-container{
   background-color: var(--backgroundColor);
   position: fixed;

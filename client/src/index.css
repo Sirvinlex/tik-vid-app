@@ -82,3 +82,12 @@ body {
         
     }
 }
+@media screen and (max-width: 500px) {
+
+.form-input {
+        border: solid 2px #ebe6e6;
+        height: 40px;
+        border-radius: 5px;
+        width: 120px;
+    }
+}
