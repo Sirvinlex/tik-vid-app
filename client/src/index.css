@@ -1,0 +1,93 @@
+*,
+::after,
+::before {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 100%;
+}
+
+:root {
+--backgroundColor:#f1f5eb;
+--bodyFont: 'Cabin', Sans-Serif;
+}
+
+body {
+    background: var(--backgroundColor) ;
+    font-family: var(--bodyFont);
+    font-weight: 400;
+    line-height: 1.75;
+    overflow-x: hidden;
+}
+
+.home-height{
+    height: 100vh;
+}
+
+.form-input {
+    border: solid 2px #ebe6e6;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.loading{
+    font-weight: 700;
+    font-size: 50px;
+    color: #e63295;
+    text-align: center;
+    background-color: inherit;
+    margin-left: -50px;
+    padding-top: 100px;
+    padding-left: 70px;
+}
+
+.post-toast{
+    position: absolute;
+    top: 70px;
+    left: 40%;
+    padding-top: 10px;
+    height: 50px;
+    width: 20%;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    z-index: 1;
+    text-align: center;
+}
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+ border-radius: 10px;
+ background: rgb(163, 157, 157);
+}
+
+
+@media screen and (max-width: 1000px) {
+    .loading{
+        font-size: 30px;
+        margin-left: 0px;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    
+    .loading{
+        margin: 0px -100px;
+        padding-left: 0px;
+        padding-top: 0px;
+        background-color: white;
+        
+    }
+}
+@media screen and (max-width: 500px) {
+
+.form-input {
+        border: solid 2px #ebe6e6;
+        height: 40px;
+        border-radius: 5px;
+        width: 120px;
+    }
+}
